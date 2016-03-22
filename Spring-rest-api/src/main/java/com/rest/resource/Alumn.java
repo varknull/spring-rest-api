@@ -12,6 +12,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Document
 public class Alumn implements Serializable {
 
@@ -20,6 +22,7 @@ public class Alumn implements Serializable {
 	private static final Logger log = LoggerFactory.getLogger(Alumn.class);
 	
 	@Id
+	@JsonIgnore
 	private ObjectId _id;
 	
 	@Indexed
