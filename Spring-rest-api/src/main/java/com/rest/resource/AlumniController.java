@@ -82,7 +82,9 @@ public class AlumniController {
     
 	@RequestMapping(value = "/alumni", method = RequestMethod.POST)
 	public ResponseEntity<?> add(@RequestBody Alumn input) {
-		this.validateAlumn(input);
+		if (!input.isValid()) {
+			throw new NotValidException();
+		}
 		
 		log.debug(input.toString());
 		Alumn result = alumnRepo.save(input);
@@ -95,19 +97,6 @@ public class AlumniController {
 		return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
 		
 	}
-	
-	private void validateAlumn(Alumn a) {
-		if(a.getAddresses()
-				.stream()
-				.anyMatch(
-					t -> t.getCountry().isEmpty() || !t.getCountry().chars().allMatch(x -> Character.isLetter(x) || Character.isSpaceChar(x)) || 
-					t.getStreet().isEmpty() || !t.getStreet().chars().allMatch(x -> Character.isLetter(x) || Character.isSpaceChar(x)) ||
-					t.getNumber().isEmpty() || !t.getNumber().chars().allMatch(x -> Character.isDigit(x))
-					)) {
-		    throw new NotValidException();
-		}
-	}
-	
 	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	class NotValidException extends RuntimeException {

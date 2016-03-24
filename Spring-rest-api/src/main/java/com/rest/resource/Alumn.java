@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rest.resource.AlumniController.NotValidException;
 
 @Document
 public class Alumn implements Serializable {
@@ -71,6 +71,20 @@ public class Alumn implements Serializable {
 
 	public void setEducation(Education education) {
 		this.education = education;
+	}
+	
+	public boolean isValid() {
+		if(this.getAddresses()
+				.stream()
+				.anyMatch(
+					t -> t.getCountry().isEmpty() || !t.getCountry().chars().allMatch(x -> Character.isLetter(x) || Character.isSpaceChar(x)) || 
+					t.getStreet().isEmpty() || !t.getStreet().chars().allMatch(x -> Character.isLetter(x) || Character.isSpaceChar(x)) ||
+					t.getNumber().isEmpty() || !t.getNumber().chars().allMatch(x -> Character.isDigit(x))
+					)) {
+		    return false;
+		} else {
+			return true;
+		}
 	}
 	
 	@Override
