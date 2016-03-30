@@ -3,6 +3,7 @@ package com.rest.resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rest.resource.AlumniController.NotValidException;
 
 @Document
 public class Alumn implements Serializable {
@@ -41,12 +41,18 @@ public class Alumn implements Serializable {
 		this.name = name;
 		this.addresses = addresses;
 		this.education = education;
-//		this._id = ObjectId.get();
 	}
 	
-	
-	public ObjectId getId() {
+	@JsonIgnore
+	public ObjectId getObjectId() {
 		return _id;
+	}
+	
+	public String getId() {
+		if (_id != null) {
+			return _id.toString();
+		}
+		return "-1";
 	}
 	
 	public String getName() {
@@ -74,21 +80,45 @@ public class Alumn implements Serializable {
 	}
 	
 	public boolean isValid() {
-		if(this.getAddresses()
+		/**
+		 * Valid if
+		 * 	Country is not empty && contains only letters 
+		 * 	Street is not empty && contains only letters
+		 * 	Number not empty && contains only digits
+		 */
+		
+		return this.getAddresses()
 				.stream()
 				.anyMatch(
-					t -> t.getCountry().isEmpty() || !t.getCountry().chars().allMatch(x -> Character.isLetter(x) || Character.isSpaceChar(x)) || 
-					t.getStreet().isEmpty() || !t.getStreet().chars().allMatch(x -> Character.isLetter(x) || Character.isSpaceChar(x)) ||
-					t.getNumber().isEmpty() || !t.getNumber().chars().allMatch(x -> Character.isDigit(x))
-					)) {
-		    return false;
-		} else {
-			return true;
-		}
+					t -> !t.getCountry().isEmpty() || t.getCountry().chars().allMatch(x -> Character.isLetter(x) || Character.isSpaceChar(x)) || 
+					!t.getStreet().isEmpty() || t.getStreet().chars().allMatch(x -> Character.isLetter(x) || Character.isSpaceChar(x)) ||
+					!t.getNumber().isEmpty() || t.getNumber().chars().allMatch(x -> Character.isDigit(x))
+					);
 	}
 	
 	@Override
-	public String toString() {
-		return "Alumn [name=" + name + ", addresses=" + addresses + ", education=" + education + "]";
+	public boolean equals(Object obj) {
+		if (obj instanceof Alumn) {
+			final Alumn other = (Alumn) obj;
+			return Objects.equals(this.getId().toString(), other.getId().toString());
+		}
+		
+		return false;
 	}
+	
+	@Override
+	public int hashCode() {
+		if (this._id != null) {
+			return Objects.hashCode(this._id.toString());
+		}
+		
+		return super.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return "Alumn [_id=" + _id + ", name=" + name + ", addresses=" + addresses + ", education=" + education + "]";
+	}
+	
+	
 }

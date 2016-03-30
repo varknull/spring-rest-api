@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Document
@@ -49,6 +50,10 @@ public class Education {
         this.qualifications = quaifications;
     }
     
+    @JsonIgnore
+    public Collection<Qualification> getQuaifications() {
+        return this.qualifications;
+    }
     
     @Override
 	public String toString() {

@@ -1,5 +1,7 @@
 package com.rest.resource;
 
+import java.util.Objects;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Document
 public class Qualification {
 
-//	@Id
-//	private ObjectId _id;
+	@Id
+	private ObjectId _id;
 
 	@JsonIgnore
 	private String title;
@@ -20,10 +22,11 @@ public class Qualification {
 
 	
 	public Qualification() {
-		this("",0);
+		this("","", 0);
 	}
 	
-	public Qualification(String university, int year) {
+	public Qualification(String title, String university, int year) {
+		this.title = title;
 		this.university = university;
 		this.year = year;
 	}
@@ -53,7 +56,18 @@ public class Qualification {
 	}
 	
 	@Override
-	public String toString() {
-		return "Education [university=" + university + ", year=" + year + "]";
+	public boolean equals(Object obj) {
+		if (obj instanceof Qualification) {
+			final Qualification other = (Qualification) obj;
+			return Objects.equals(this.getTitle(), other.getTitle());
+		}
+		
+		return false;
 	}
+
+	@Override
+	public String toString() {
+		return "Qualification [title=" + title + ", university=" + university + ", year=" + year + "]";
+	}
+	
 }

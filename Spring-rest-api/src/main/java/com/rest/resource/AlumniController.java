@@ -80,6 +80,11 @@ public class AlumniController {
       return alumnRepo.findOne(id);
     }
     
+    @RequestMapping(value = "/alumni/{id}", method = RequestMethod.DELETE)
+    public void deleteOne(@PathVariable String id) {
+    	alumnRepo.delete(id);
+    }
+    
 	@RequestMapping(value = "/alumni", method = RequestMethod.POST)
 	public ResponseEntity<?> add(@RequestBody Alumn input) {
 		if (!input.isValid()) {
@@ -93,6 +98,8 @@ public class AlumniController {
 		httpHeaders.setLocation(ServletUriComponentsBuilder
 				.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(result.getId()).toUri());
+		
+		httpHeaders.set("id", result.getId());
 		
 		return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
 		
